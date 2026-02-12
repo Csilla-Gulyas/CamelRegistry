@@ -12,8 +12,8 @@ builder.WebHost.UseUrls("http://localhost:5005");
 builder.Services.AddDbContext<CamelDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//builder.Services.AddScoped<ICamelRepository, CamelRepository>();
-//builder.Services.AddScoped<ICamelService, CamelService>();
+builder.Services.AddScoped<ICamelRepository, CamelRepository>();
+builder.Services.AddScoped<ICamelService, CamelService>();
 
 //builder.Services.AddValidatorsFromAssemblyContaining<CamelValidator>();
 
@@ -46,9 +46,15 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<CamelDbContext>();
     db.Database.EnsureCreated();
+
+    SeedData.Initialize(db);
 }
 
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/camels", async (ICamelService service) =>
+{
+    var camels = await service.GetAllCamelsAsync();
+    return Results.Ok(camels);
+});
 
 app.Run();
 
