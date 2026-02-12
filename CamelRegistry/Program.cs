@@ -22,20 +22,6 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseExceptionHandler(errorApp =>
-{
-    errorApp.Run(async context =>
-    {
-        context.Response.ContentType = "application/json";
-        var exception = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>()?.Error;
-        if (exception != null)
-        {
-            context.Response.StatusCode = 500;
-            await context.Response.WriteAsJsonAsync(new { error = exception.Message });
-        }
-    });
-});
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -55,6 +41,14 @@ app.MapGet("/camels", async (ICamelService service) =>
     var camels = await service.GetAllCamelsAsync();
     return Results.Ok(camels);
 });
+
+app.MapDelete("/camels/{id}", async (int id, ICamelService service) =>
+{
+    var deleted = await service.DeleteCamelAsync(id);
+    return Results.Ok(deleted);
+});
+
+app.UseMiddleware<CamelRegistry.Middleware.GlobalExceptionHandler>();
 
 app.Run();
 

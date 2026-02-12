@@ -1,6 +1,7 @@
 ﻿using CamelRegistry.Entities;
 using CamelRegistry.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace CamelRegistry.Services
 {
@@ -16,6 +17,16 @@ namespace CamelRegistry.Services
         public async Task<IEnumerable<Camel>> GetAllCamelsAsync()
         {
             return await _repository.GetAll().ToListAsync();
+        }
+
+        public async Task<Camel?> DeleteCamelAsync(int id)
+        {
+            var deleted = await _repository.DeleteAsync(id);
+
+            if (deleted == null)
+                throw new KeyNotFoundException($"A {id} azonosítójú teve nem található.");
+
+            return deleted;
         }
     }
 }

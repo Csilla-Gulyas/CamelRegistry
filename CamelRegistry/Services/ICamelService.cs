@@ -8,6 +8,6 @@ namespace CamelRegistry.Services
         Task<IEnumerable<Camel>> GetAllCamelsAsync();
         //Task<Camel?> GetByIdAsync(int id);
         //Task<Camel> UpdateCamelAsync(Camel camel);
-        //Task<Camel?> DeleteCamelAsync(int id);
+        Task<Camel?> DeleteCamelAsync(int id);
     }
 }

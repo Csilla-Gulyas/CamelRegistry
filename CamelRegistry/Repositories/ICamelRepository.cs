@@ -8,6 +8,6 @@ namespace CamelRegistry.Repositories
         IQueryable<Camel> GetAll();
         //Task<Camel?> GetByIdAsync(int id);
         //Task<Camel> UpdateAsync(Camel camel);
-        //Task<Camel?> DeleteAsync(int id);
+        Task<Camel?> DeleteAsync(int id);
     }
 }
