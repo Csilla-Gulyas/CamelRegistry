@@ -36,10 +36,18 @@ using (var scope = app.Services.CreateScope())
     SeedData.Initialize(db);
 }
 
+app.UseMiddleware<CamelRegistry.Middleware.GlobalExceptionHandler>();
+
 app.MapGet("/camels", async (ICamelService service) =>
 {
     var camels = await service.GetAllCamelsAsync();
     return Results.Ok(camels);
+});
+
+app.MapGet("/camels/{id}", async (int id, ICamelService service) =>
+{
+    var camel = await service.GetByIdAsync(id);
+    return Results.Ok(camel);
 });
 
 app.MapDelete("/camels/{id}", async (int id, ICamelService service) =>
@@ -47,8 +55,6 @@ app.MapDelete("/camels/{id}", async (int id, ICamelService service) =>
     var deleted = await service.DeleteCamelAsync(id);
     return Results.Ok(deleted);
 });
-
-app.UseMiddleware<CamelRegistry.Middleware.GlobalExceptionHandler>();
 
 app.Run();
 

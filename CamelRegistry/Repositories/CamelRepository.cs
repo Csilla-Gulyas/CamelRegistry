@@ -17,6 +17,12 @@ namespace CamelRegistry.Repositories
             return _context.Camels.AsQueryable();
         }
 
+        public async Task<Camel?> GetByIdAsync(int id)
+        {
+            return await _context.Camels
+                .FindAsync(id);
+        }
+
         public async Task<Camel?> DeleteAsync(int id)
         {
             var camel = await _context.Camels.FindAsync(id);
