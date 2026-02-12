@@ -32,6 +32,23 @@ namespace CamelRegistry.Services
             return camel;
         }
 
+        public async Task<CamelDto> UpdateCamelAsync(int id, CamelDto camelDto)
+        {
+            var updatedCamel = await _repository.UpdateAsync(id, camelDto);
+
+            if (updatedCamel == null)
+                throw new KeyNotFoundException($"A {id} azonosítójú teve nem található.");
+
+            return new CamelDto
+            {
+                Id = updatedCamel.Id,
+                Name = updatedCamel.Name,
+                Color = updatedCamel.Color,
+                HumpCount = updatedCamel.HumpCount,
+                LastFed = updatedCamel.LastFed
+            };
+        }
+
         public async Task<DeleteDto?> DeleteCamelAsync(int id)
         {
             var deleted = await _repository.DeleteAsync(id);

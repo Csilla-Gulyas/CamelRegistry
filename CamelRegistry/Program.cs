@@ -1,8 +1,11 @@
 using CamelRegistry.Data;
+using CamelRegistry.NewFolder;
 using CamelRegistry.Repositories;
 using CamelRegistry.Services;
 using CamelRegistry.Validators;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,10 +18,20 @@ builder.Services.AddDbContext<CamelDbContext>(options =>
 builder.Services.AddScoped<ICamelRepository, CamelRepository>();
 builder.Services.AddScoped<ICamelService, CamelService>();
 
-//builder.Services.AddValidatorsFromAssemblyContaining<CamelValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CamelValidator>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -38,6 +51,8 @@ using (var scope = app.Services.CreateScope())
 
 app.UseMiddleware<CamelRegistry.Middleware.GlobalExceptionHandler>();
 
+app.UseCors();
+
 app.MapGet("/camels", async (ICamelService service) =>
 {
     var camels = await service.GetAllCamelsAsync();
@@ -48,6 +63,18 @@ app.MapGet("/camels/{id}", async (int id, ICamelService service) =>
 {
     var camel = await service.GetByIdAsync(id);
     return Results.Ok(camel);
+});
+
+app.MapPatch("/camels/{id}", async (int id, CamelDto camelDto, ICamelService service, IValidator<CamelDto> validator) =>
+{
+    var existingCamel = await service.GetByIdAsync(id);
+
+    var result = await validator.ValidateAsync(camelDto);
+    if (!result.IsValid)
+        return Results.BadRequest(result.Errors.Select(e => e.ErrorMessage));
+
+    var updatedCamel = await service.UpdateCamelAsync(id, camelDto);
+    return Results.Ok(updatedCamel);
 });
 
 app.MapDelete("/camels/{id}", async (int id, ICamelService service) =>

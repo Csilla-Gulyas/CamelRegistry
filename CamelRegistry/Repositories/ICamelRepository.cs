@@ -1,4 +1,5 @@
 ﻿using CamelRegistry.Entities;
+using CamelRegistry.NewFolder;
 
 namespace CamelRegistry.Repositories
 {
@@ -7,7 +8,7 @@ namespace CamelRegistry.Repositories
         //Task<Camel> AddAsync(Camel camel);
         IQueryable<Camel> GetAll();
         Task<Camel?> GetByIdAsync(int id);
-        //Task<Camel> UpdateAsync(Camel camel);
+        Task<Camel?> UpdateAsync(int id, CamelDto updateDto);
         Task<Camel?> DeleteAsync(int id);
     }
 }
