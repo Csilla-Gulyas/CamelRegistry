@@ -39,13 +39,11 @@ CRUD műveleteket biztosít, DTO validációval, és Swagger UI-n keresztül dok
 ## Telepítési útmutató
 ### Előkészületek
 
-Telepítsd a .NET 9 SDK és Runtime-ot.
+Telepítsd a .NET 9 SDK-t.
 
 Telepítsd a Visual Studio-t a szükséges workloadokkal:
 
 ASP.NET and web development
-
-.NET Core cross-platform development (tesztekhez)
 
 A projekt SQLite-ot használ, így külön adatbázis-szerver nem szükséges.
 
