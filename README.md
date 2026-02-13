@@ -43,7 +43,7 @@ Telepítsd a .NET 9 SDK-t.
 
 Telepítsd a Visual Studio-t a szükséges workloadokkal:
 
-ASP.NET and web development
+- ASP.NET and web development
 
 A projekt SQLite-ot használ, így külön adatbázis-szerver nem szükséges.
 
