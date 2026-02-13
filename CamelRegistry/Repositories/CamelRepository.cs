@@ -1,6 +1,5 @@
 ﻿using CamelRegistry.Data;
 using CamelRegistry.Entities;
-using CamelRegistry.NewFolder;
 
 namespace CamelRegistry.Repositories
 {
@@ -11,6 +10,13 @@ namespace CamelRegistry.Repositories
         public CamelRepository(CamelDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<Camel> AddAsync(Camel camel)
+        {
+            await _context.Camels.AddAsync(camel);
+            await _context.SaveChangesAsync();
+            return camel;
         }
 
         public IQueryable<Camel> GetAll()
@@ -24,27 +30,19 @@ namespace CamelRegistry.Repositories
                 .FindAsync(id);
         }
 
-        public async Task<Camel?> UpdateAsync(int id, CamelDto updateDto)
+        public async Task<Camel?> UpdateAsync(Camel camel)
         {
-            var camel = await _context.Camels.FindAsync(id);
-
-            if (camel == null)
+            var existing = await _context.Camels.FindAsync(camel.Id);
+            if (existing == null)
                 return null;
 
-            if (!string.IsNullOrEmpty(updateDto.Name))
-                camel.Name = updateDto.Name;
-
-            if (!string.IsNullOrEmpty(updateDto.Color))
-                camel.Color = updateDto.Color;
-
-            if (updateDto.HumpCount.HasValue)
-                camel.HumpCount = updateDto.HumpCount.Value;
-
-            if (updateDto.LastFed.HasValue)
-                camel.LastFed = updateDto.LastFed.Value;
+            existing.Name = camel.Name;
+            existing.Color = camel.Color;
+            existing.HumpCount = camel.HumpCount;
+            existing.LastFed = camel.LastFed;
 
             await _context.SaveChangesAsync();
-            return camel;
+            return existing;
         }
 
         public async Task<Camel?> DeleteAsync(int id)

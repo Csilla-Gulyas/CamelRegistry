@@ -1,14 +1,15 @@
-﻿using CamelRegistry.Entities;
-using CamelRegistry.NewFolder;
+﻿using CamelRegistry.DTOs.Requests;
+using CamelRegistry.DTOs.Responses;
+using CamelRegistry.Entities;
 
 namespace CamelRegistry.Services
 {
     public interface ICamelService
     {
-        //Task<Camel> AddCamelAsync(Camel camel);
-        Task<IEnumerable<Camel?>> GetAllCamelsAsync();
-        Task<Camel?> GetByIdAsync(int id);
-        Task<CamelDto> UpdateCamelAsync(int id, CamelDto updateDto);
+        Task<CamelDto> AddCamelAsync(CreateCamelDto camelDto);
+        Task<IEnumerable<CamelDto>> GetAllCamelsAsync();
+        Task<CamelDto> GetByIdAsync(int id);
+        Task<CamelDto> UpdateCamelAsync(int id, UpdateCamelDto camelDto);
         Task<DeleteDto?> DeleteCamelAsync(int id);
     }
 }

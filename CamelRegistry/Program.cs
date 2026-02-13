@@ -1,5 +1,6 @@
 using CamelRegistry.Data;
-using CamelRegistry.NewFolder;
+using CamelRegistry.DTOs.Requests;
+using CamelRegistry.DTOs.Responses;
 using CamelRegistry.Repositories;
 using CamelRegistry.Services;
 using CamelRegistry.Validators;
@@ -18,7 +19,8 @@ builder.Services.AddDbContext<CamelDbContext>(options =>
 builder.Services.AddScoped<ICamelRepository, CamelRepository>();
 builder.Services.AddScoped<ICamelService, CamelService>();
 
-builder.Services.AddValidatorsFromAssemblyContaining<CamelValidator>();
+builder.Services.AddTransient<IValidator<CreateCamelDto>, CreateCamelValidator>();
+builder.Services.AddTransient<IValidator<UpdateCamelDto>, UpdateCamelValidator>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -53,19 +55,30 @@ app.UseMiddleware<CamelRegistry.Middleware.GlobalExceptionHandler>();
 
 app.UseCors();
 
-app.MapGet("/camels", async (ICamelService service) =>
+app.MapPost("/api/camels", async (CreateCamelDto camelDto, ICamelService service, IValidator<CreateCamelDto> validator) =>
+{
+    var result = await validator.ValidateAsync(camelDto);
+    if (!result.IsValid)
+        return Results.BadRequest(result.Errors.Select(e => e.ErrorMessage));
+
+    var addedCamel = await service.AddCamelAsync(camelDto);
+    return Results.Created($"/camels/{addedCamel.Id}", addedCamel);
+});
+
+
+app.MapGet("/api/camels", async (ICamelService service) =>
 {
     var camels = await service.GetAllCamelsAsync();
     return Results.Ok(camels);
 });
 
-app.MapGet("/camels/{id}", async (int id, ICamelService service) =>
+app.MapGet("/api/camels/{id}", async (int id, ICamelService service) =>
 {
     var camel = await service.GetByIdAsync(id);
     return Results.Ok(camel);
 });
 
-app.MapPatch("/camels/{id}", async (int id, CamelDto camelDto, ICamelService service, IValidator<CamelDto> validator) =>
+app.MapPatch("/api/camels/{id}", async (int id, UpdateCamelDto camelDto, ICamelService service, IValidator<UpdateCamelDto> validator) =>
 {
     var existingCamel = await service.GetByIdAsync(id);
 
@@ -77,7 +90,7 @@ app.MapPatch("/camels/{id}", async (int id, CamelDto camelDto, ICamelService ser
     return Results.Ok(updatedCamel);
 });
 
-app.MapDelete("/camels/{id}", async (int id, ICamelService service) =>
+app.MapDelete("/api/camels/{id}", async (int id, ICamelService service) =>
 {
     var deleted = await service.DeleteCamelAsync(id);
     return Results.Ok(deleted);
