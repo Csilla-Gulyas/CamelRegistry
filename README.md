@@ -36,3 +36,39 @@ CRUD műveleteket biztosít, DTO validációval, és Swagger UI-n keresztül dok
 
 ---
 
+## Telepítési útmutató
+### Előkészületek
+
+Telepítsd a .NET 9 SDK és Runtime-ot.
+
+Telepítsd a Visual Studio-t a szükséges workloadokkal:
+
+ASP.NET and web development
+
+.NET Core cross-platform development (tesztekhez)
+
+A projekt SQLite-ot használ, így külön adatbázis-szerver nem szükséges.
+
+### Projekt build Visual Studio-ban
+
+Nyisd meg a CamelRegistry.sln-t Visual Studio-ban.
+
+Állítsd a Solution Configuration-t Debug-ra.
+
+Build: Build → Build Solution
+
+Ellenőrizd, hogy nincs hiba.
+
+Tesztek futtatása: Test Explorer → Run All Tests
+
+xUnit és FluentAssertions biztosítják a működést.
+
+### Futtatás és ellenőrzés
+
+Böngészőből: http://localhost:5005/
+
+Swagger dokumentáció:
+
+UI: http://localhost:5005/swagger/index.html
+
+JSON: http://localhost:5005/swagger/v1/swagger.json
