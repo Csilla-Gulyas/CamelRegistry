@@ -23,7 +23,15 @@ builder.Services.AddTransient<IValidator<CreateCamelDto>, CreateCamelValidator>(
 builder.Services.AddTransient<IValidator<UpdateCamelDto>, UpdateCamelValidator>();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "Camel Registry API",
+        Version = "v1",
+        Description = "API a tevék kezelésére (CRUD)"
+    });
+});
 
 builder.Services.AddCors(options =>
 {
@@ -40,7 +48,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Camel Registry API v1");
+        c.RoutePrefix = "swagger";
+    });
 }
 
 using (var scope = app.Services.CreateScope())
@@ -55,6 +67,7 @@ app.UseMiddleware<CamelRegistry.Middleware.GlobalExceptionHandler>();
 
 app.UseCors();
 
+
 app.MapPost("/api/camels", async (CreateCamelDto camelDto, ICamelService service, IValidator<CreateCamelDto> validator) =>
 {
     var result = await validator.ValidateAsync(camelDto);
@@ -63,8 +76,8 @@ app.MapPost("/api/camels", async (CreateCamelDto camelDto, ICamelService service
 
     var addedCamel = await service.AddCamelAsync(camelDto);
     return Results.Created($"/camels/{addedCamel.Id}", addedCamel);
-});
-
+})
+.Produces<CamelDto>(StatusCodes.Status201Created);
 
 app.MapGet("/api/camels", async (ICamelService service) =>
 {
